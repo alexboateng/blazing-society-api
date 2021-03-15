@@ -52,7 +52,27 @@ class ModelTests(TestCase):
 
     def test_tournament_str(self):
         """Test the Tournament string representation"""
-        game = models.Tournament.objects.create(
+        tournament = models.Tournament.objects.create(
             name='BS RANK March 2020'
         )
-        self.assertEqual(str(game), game.name)
+        self.assertEqual(str(tournament), tournament.name)
+
+    def test_scoreline_str(self):
+        """Test the scoreline string representation"""
+        game = models.Game.objects.create(
+            name='MK11'
+        )
+        tournament = models.Tournament.objects.create(
+            name='BS RANK March 2020'
+        )
+        scoreline = models.Scoreline.objects.create(
+            first_player=sample_user(),
+            second_player=sample_user(email="here@mail.com"),
+            tournament=tournament,
+            game=game,
+            first_player_score=5,
+            second_player_score=2,
+            draw_score=3
+        )
+
+        self.assertEqual(str(scoreline), f"{scoreline.game.name} {scoreline.first_player.name} {scoreline.first_player_score} - {scoreline.second_player.name} {scoreline.second_player_score} ")

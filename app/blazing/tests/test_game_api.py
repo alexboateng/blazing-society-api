@@ -77,3 +77,12 @@ class PrivateSuperUserGameTestCase(TestCase):
         self.assertTrue(exists)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
+    def test_create_game_duplicate_fail(self):
+        """Test create duplicate game as superuser"""
+        Game.objects.create(name="Game")
+
+        payload = { 'name': 'Game' }
+        res = self.client.post(GAMES_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+

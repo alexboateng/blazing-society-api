@@ -77,3 +77,12 @@ class PrivateSuperUserTournamentTestCase(TestCase):
         self.assertTrue(exists)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
+    def test_create_game_duplicate_fail(self):
+        """Test create duplicate tournament as superuser"""
+        Tournament.objects.create(name="Tournament")
+
+        payload = { 'name': 'Tournament' }
+        res = self.client.post(TOURNAMENTS_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+

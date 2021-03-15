@@ -7,7 +7,8 @@ from blazing import views
 router = DefaultRouter()
 router.register('tournaments', views.TournamentViewSet)
 router.register('games', views.GameViewSet)
-# router.register('recipes', views.RecipeViewset)
+router.register('scorelines', views.ScorelineViewSet)
+router.register('game-stats', views.GameStatsViewSet, base_name="game-stats")
 
 app_name = 'blazing'
 

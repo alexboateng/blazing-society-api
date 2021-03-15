@@ -43,6 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_gamer = models.BooleanField(default=False)
 
     objects = UserManager()
 
@@ -64,7 +65,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Game(models.Model):
     """Game model"""
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return self.name
@@ -72,7 +73,40 @@ class Game(models.Model):
 
 class Tournament(models.Model):
     """Tournament model"""
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return self.name
+
+
+class Scoreline(models.Model):
+    """Blazing tournament scoreline"""
+    tournament = models.ForeignKey(
+        Tournament,
+        on_delete=models.CASCADE,
+        related_name='scorelines'
+    )
+    game = models.ForeignKey(
+        Game,
+        on_delete=models.CASCADE,
+        related_name='scorelines'
+    )
+    first_player = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="first_player_users",
+    )
+    second_player = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="second_player_users",
+    )
+    first_player_score = models.IntegerField(default=0)
+    second_player_score = models.IntegerField(default=0)
+    draw_score = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ('tournament', 'game', 'first_player', 'second_player')
+
+    def __str__(self):
+        return f"{self.game.name} {self.first_player.name} {self.first_player_score} - {self.second_player.name} {self.second_player_score} "

@@ -104,6 +104,8 @@ class Scoreline(models.Model):
     first_player_score = models.IntegerField(default=0)
     second_player_score = models.IntegerField(default=0)
     draw_score = models.IntegerField(default=0)
+    first_player_score_goals = models.IntegerField(default=0)
+    second_player_score_goals = models.IntegerField(default=0)
 
     class Meta:
         unique_together = ('tournament', 'game', 'first_player', 'second_player')

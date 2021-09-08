@@ -164,14 +164,36 @@ class GameStatsViewSet(viewsets.ViewSet):
                                             Q(tournament=tournament.id) & Q(game=game.id) & Q(second_player=user.id)
                                         ).aggregate(Sum('first_player_score'))
 
+                    # Calculate Goals
+                    goals_user_first_player_score = Scoreline.objects.filter(
+                                            Q(tournament=tournament.id) & Q(game=game.id) & Q(first_player=user.id)
+                                        ).aggregate(Sum('first_player_score_goals'))
+                    goals_user_second_player_score = Scoreline.objects.filter(
+                                            Q(tournament=tournament.id) & Q(game=game.id) & Q(second_player=user.id)
+                                        ).aggregate(Sum('second_player_score_goals'))
+
+                    # Calculate Goals Against
+                    goals_against_user_first_player_score = Scoreline.objects.filter(
+                                            Q(tournament=tournament.id) & Q(game=game.id) & Q(first_player=user.id)
+                                        ).aggregate(Sum('second_player_score_goals'))
+                    goals_against_user_second_player_score = Scoreline.objects.filter(
+                                            Q(tournament=tournament.id) & Q(game=game.id) & Q(second_player=user.id)
+                                        ).aggregate(Sum('first_player_score_goals'))
+
                     # print("-----------------------------------------------")
                     # print(games_played)
                     # print("-----------------------------------------------")
 
 
                     gameData['total_won'] = int(user_first_player_score['first_player_score__sum'] or 0) + int(user_second_player_score['second_player_score__sum'] or 0)
+                    gameData['total_goals_for'] = int(goals_user_first_player_score['first_player_score_goals__sum'] or 0) + int(goals_user_second_player_score['second_player_score_goals__sum'] or 0)
+                    gameData['total_goals_against'] = int(goals_against_user_first_player_score['second_player_score_goals__sum'] or 0) + int(goals_against_user_second_player_score['first_player_score_goals__sum'] or 0)
+                    gameData['total_goals_avg'] = int(gameData['total_goals_for'] or 0) - int(gameData['total_goals_against'] or 0)
                     gameData['total_draws'] = int(user_draw_score['draw_score__sum'] or 0)
                     gameData['total_lost'] = int(loss_user_first_player_score['second_player_score__sum'] or 0) + int(loss_user_second_player_score['first_player_score__sum'] or 0)
+
+                    gameData['total_points'] = int(gameData['total_won'] or 0) * 3 + int(gameData['total_draws'] or 0)
+                    
                     gameData['games_played'] = games_played
 
 

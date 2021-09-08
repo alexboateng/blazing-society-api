@@ -54,6 +54,8 @@ class ScorelineSerializer(serializers.ModelSerializer):
         'second_player', 
         'first_player_score',
         'second_player_score',
+        'first_player_score_goals',
+        'second_player_score_goals',
         'draw_score')
         read_only_fields = ('id',)
 
